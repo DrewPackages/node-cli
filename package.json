@@ -1,0 +1,22 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "cli": "ts-node src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "@hediet/cli": "^0.6.3",
+    "engine": "file:../engine",
+    "fs-extra": "^11.2.0",
+    "simple-git": "^3.22.0"
+  }
+}
