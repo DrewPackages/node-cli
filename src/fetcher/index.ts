@@ -1,7 +1,9 @@
 import { IFormulaFetcher } from "engine";
 import simpleGit from "simple-git";
 import { normalize, join } from "path";
-import { readFile, mkdir, opendir } from "fs-extra";
+import fsExtra from "fs-extra";
+
+const { readFile, mkdir, opendir } = fsExtra;
 
 type ParsedFormulaRef = {
   repo: string;

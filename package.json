@@ -2,10 +2,11 @@
   "name": "cli",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.ts",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "cli": "ts-node src/index.ts"
+    "cli": "ts-node-esm src/index.ts"
   },
   "author": "",
   "license": "ISC",
