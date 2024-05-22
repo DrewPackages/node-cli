@@ -1,4 +1,9 @@
-import { positionalParam, types } from "@hediet/cli";
+import {
+  MultiValueParamType,
+  namedParam,
+  positionalParam,
+  types,
+} from "@hediet/cli";
 import { parse, validate } from "engine";
 import { fetcher } from "../../fetcher";
 import { configResolver } from "../../config";
@@ -12,6 +17,11 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
         description: "Formula to execute",
       }),
     ],
+    namedParams: {
+      formulaParams: namedParam(types.string.withDefaultValue(""), {
+        description: "Formula parameters in json format",
+      }),
+    },
     getData: (args) => ({
       async run() {
         const steps = await validate(
@@ -19,7 +29,8 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
             formulaName: args.formula,
             values: {},
           },
-          fetcher
+          fetcher,
+          args.formulaParams !== "" ? JSON.parse(args.formulaParams) : undefined
         );
 
         const instructions = await parse(steps, configResolver);
