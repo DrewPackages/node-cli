@@ -3,6 +3,7 @@ import { parse, validate } from "engine";
 import { fetcher } from "../../fetcher";
 import { CmdInfoSupplier } from "../types";
 import { CombinedConfigResolver, DEFAULT_CONFIG_PATH } from "../../config";
+import { TaskExecutor } from "../../executor/tasks";
 
 export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
   cli.addCmd({
@@ -37,8 +38,15 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
 
         const instructions = await parse(steps, configResolver);
 
+        const tasks = new TaskExecutor();
+
         console.log("Instructions for execution");
         console.log(JSON.stringify(instructions, null, 2));
+
+        for (let index = 0; index < instructions.length; index++) {
+          const instruction = instructions[index];
+          await tasks.runStage(args.formula, instruction);
+        }
       },
     }),
   });

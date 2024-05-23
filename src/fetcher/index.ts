@@ -11,6 +11,12 @@ type ParsedFormulaRef = {
   rev?: string;
 };
 
+export function getFormulaPath(formulaName: string): string {
+  return normalize(
+    join(process.env.HOME as string, `/.drew/formulas/${formulaName}`)
+  );
+}
+
 async function isEmptyDir(path: string) {
   try {
     const directory = await opendir(path);
