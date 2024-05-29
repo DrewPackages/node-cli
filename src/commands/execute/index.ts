@@ -4,6 +4,7 @@ import { fetcher } from "../../fetcher";
 import { CmdInfoSupplier } from "../types";
 import { CombinedConfigResolver, DEFAULT_CONFIG_PATH } from "../../config";
 import { TaskExecutor } from "../../executor/tasks";
+import { OffchainExecutor } from "../../executor/offchain";
 
 export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
   cli.addCmd({
@@ -19,6 +20,9 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
       }),
       configFile: namedParam(types.string.withDefaultValue(""), {
         description: "Optional different execution params file",
+      }),
+      dryRun: namedParam(types.booleanFlag, {
+        description: "Just show execution plan",
       }),
     },
     getData: (args) => ({
@@ -39,13 +43,21 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
         const instructions = await parse(steps, configResolver);
 
         const tasks = new TaskExecutor();
+        const offchain = new OffchainExecutor();
 
-        console.log("Instructions for execution");
-        console.log(JSON.stringify(instructions, null, 2));
-
-        for (let index = 0; index < instructions.length; index++) {
-          const instruction = instructions[index];
-          await tasks.runStage(args.formula, instruction);
+        if (args.dryRun) {
+          console.log("Instructions for execution");
+          console.log(JSON.stringify(instructions, null, 2));
+        } else {
+          for (let index = 0; index < instructions.length; index++) {
+            const instruction = instructions[index];
+            if (instruction.type === "task") {
+              await tasks.runStage(args.formula, instruction);
+            }
+            if (instruction.type === "offchain") {
+              await offchain.runStage(args.formula, instruction);
+            }
+          }
         }
       },
     }),
