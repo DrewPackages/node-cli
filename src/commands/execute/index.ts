@@ -5,6 +5,7 @@ import { CmdInfoSupplier } from "../types";
 import { CombinedConfigResolver, DEFAULT_CONFIG_PATH } from "../../config";
 import { TaskExecutor } from "../../executor/tasks";
 import { OffchainExecutor } from "../../executor/offchain";
+import { StateStorage } from "../../state";
 
 export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
   cli.addCmd({
@@ -27,12 +28,13 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
     },
     getData: (args) => ({
       async run() {
+        const state = new StateStorage();
         const steps = await validate(
           {
             formulaName: args.formula,
-            values: {},
           },
           fetcher,
+          state,
           args.formulaParams !== "" ? JSON.parse(args.formulaParams) : undefined
         );
 
@@ -40,7 +42,7 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
           args.configFile || DEFAULT_CONFIG_PATH
         );
 
-        const instructions = await parse(steps, configResolver);
+        const instructions = await parse(steps, configResolver, state);
 
         const tasks = new TaskExecutor();
         const offchain = new OffchainExecutor();

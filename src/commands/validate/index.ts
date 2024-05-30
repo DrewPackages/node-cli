@@ -2,6 +2,7 @@ import { namedParam, positionalParam, types } from "@hediet/cli";
 import { validate } from "engine";
 import { fetcher } from "../../fetcher";
 import { CmdInfoSupplier } from "../types";
+import { StateStorage } from "../../state";
 
 export const ValidateCommandInfo: CmdInfoSupplier = (cli) =>
   cli.addCmd({
@@ -18,12 +19,13 @@ export const ValidateCommandInfo: CmdInfoSupplier = (cli) =>
     },
     getData: (args) => ({
       async run() {
+        const state = new StateStorage();
         const steps = await validate(
           {
             formulaName: args.formula,
-            values: {},
           },
           fetcher,
+          state,
           args.formulaParams !== "" ? JSON.parse(args.formulaParams) : undefined
         );
 
