@@ -44,8 +44,8 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
 
         const instructions = await parse(steps, configResolver, state);
 
-        const tasks = new TaskExecutor();
-        const offchain = new OffchainExecutor();
+        const tasks = new TaskExecutor(state);
+        const offchain = new OffchainExecutor(state);
 
         if (args.dryRun) {
           console.log("Instructions for execution");
@@ -54,7 +54,8 @@ export const ExecuteCommandInfo: CmdInfoSupplier = (cli) =>
           for (let index = 0; index < instructions.length; index++) {
             const instruction = instructions[index];
             if (instruction.type === "task") {
-              await tasks.runStage(args.formula, instruction);
+              const outputs = await tasks.runStage(args.formula, instruction);
+              state.addResolvedValues(outputs);
             }
             if (instruction.type === "offchain") {
               await offchain.runStage(args.formula, instruction);

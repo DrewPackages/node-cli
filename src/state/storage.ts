@@ -1,9 +1,18 @@
-import { IStateStorage, ScheduleOutput } from "engine";
+import {
+  IStateStorage,
+  ScheduleOutput,
+  ValueOrOutput,
+  isScheduleOutput,
+} from "engine";
 
 export class StateStorage implements IStateStorage {
   private readonly registeredIds: Set<string> = new Set();
 
   private readonly resolvedValues: Map<string, any> = new Map();
+
+  addResolvedValues(outputs: Array<{ id: string; value: any }>) {
+    outputs.forEach((o) => this.resolvedValues.set(o.id, o.value));
+  }
 
   registerOutputs(outputs: ScheduleOutput[]) {
     for (let index = 0; index < outputs.length; index++) {
@@ -35,5 +44,13 @@ export class StateStorage implements IStateStorage {
     }
 
     return this.resolvedValues.get(outputId);
+  }
+
+  toValue<T>(valueOrOutput: ValueOrOutput<T>): T {
+    if (isScheduleOutput(valueOrOutput)) {
+      return this.getOutputValue(valueOrOutput.id);
+    }
+
+    return valueOrOutput;
   }
 }
