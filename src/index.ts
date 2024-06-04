@@ -1,15 +1,17 @@
-import { runDefaultCli, cliInfoFromPackageJson } from "@hediet/cli";
+import { Command } from "commander";
+import packageJson from "../package.json" assert { type: "json" };
 import path from "node:path";
 import { provideCli } from "./commands";
 import { fileURLToPath } from "url";
 
-const cli = provideCli();
+const program = new Command();
+
+program
+  .name("drew")
+  .description("CLI for dapp deployments")
+  .version(packageJson.version);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+provideCli(program);
 
-runDefaultCli({
-  info: cliInfoFromPackageJson(path.join(__dirname, "../package.json")),
-  cli,
-  // Asynchronously process an instance of `CmdData` here as you like.
-  dataHandler: (data) => data.run(),
-});
+program.parse();

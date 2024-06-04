@@ -1,7 +1,7 @@
-import type { Cli } from "@hediet/cli";
+import { Command } from "commander";
 
 export type CmdExecutor = {
   run(): Promise<void>;
 };
 
-export type CmdInfoSupplier = (cli: Pick<Cli<CmdExecutor>, "addCmd">) => void;
+export type CmdInfoSupplier = (cli: Command) => void;
