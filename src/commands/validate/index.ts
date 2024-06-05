@@ -1,4 +1,4 @@
-import { validate } from "engine";
+import { validate } from "@drewpackages/engine";
 import { fetcher } from "../../fetcher";
 import { CmdInfoSupplier } from "../types";
 import { StateStorage } from "../../state";

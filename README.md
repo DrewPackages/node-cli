@@ -3,33 +3,16 @@
 ## Example
 
 ### Installation
-
-Clone Drew repos
-
-```sh
-git clone git@github.com:DrewPackages/engine.git
-git clone git@github.com:DrewPackages/node-cli.git
-```
-
-Build Engine
-
-```sh
-cd engine
-npm i
-npm run build
-```
-
 Install CLI deps
 
 ```sh
-cd ../node-cli
-npm i
+pnpm i
 ```
 
 ### Run example
 
 ```sh
-npm run cli -- check DrewPackages/engine/test/formulas/erc20
+pnpm run cli --check DrewPackages/engine/test/formulas/erc20  --params "{\"name\": \"Test Token\", \"symbol\": \"TT\", \"totalSupply\": 100000000000000 }"
 ```
 
 Drew will download formula from git, validate it and print its steps

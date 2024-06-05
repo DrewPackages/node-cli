@@ -109,6 +109,7 @@
     "baseUrl": "src"
   },
   "ts-node": {
+    "esm": true,
     "experimentalSpecifierResolution": "node"
   }
 }

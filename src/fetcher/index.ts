@@ -1,4 +1,4 @@
-import { IFormulaFetcher } from "engine";
+import { IFormulaFetcher } from "@drewpackages/engine";
 import simpleGit from "simple-git";
 import { normalize, join } from "path";
 import fsExtra from "fs-extra";

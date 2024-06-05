@@ -1,5 +1,5 @@
 import Dockerode from "dockerode";
-import { StageInstruction } from "engine";
+import { StageInstruction } from "@drewpackages/engine";
 import { getFormulaPath } from "../fetcher";
 import { normalize, join } from "path";
 import { StateStorage } from "state";

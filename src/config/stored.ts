@@ -1,4 +1,4 @@
-import { IEnvironmentResolver } from "engine";
+import { IEnvironmentResolver } from "@drewpackages/engine";
 import { existsSync, lstatSync, readFileSync, writeFileSync } from "fs";
 import { createFileSync } from "fs-extra";
 import { normalize, join } from "path";

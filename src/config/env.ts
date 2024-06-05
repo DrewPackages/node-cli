@@ -1,4 +1,4 @@
-import { IEnvironmentResolver } from "engine";
+import { IEnvironmentResolver } from "@drewpackages/engine";
 
 export class EnvConfigResolver implements IEnvironmentResolver {
   private readEnv(name: string): string {

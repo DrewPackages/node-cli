@@ -1,5 +1,5 @@
 import Dockerode from "dockerode";
-import { RegexOutputSpec, ScheduleOutput, StageInstruction } from "engine";
+import { RegexOutputSpec, ScheduleOutput, StageInstruction } from "@drewpackages/engine";
 import { getFormulaPath } from "../fetcher";
 import { normalize, join } from "path";
 import { PassThrough } from "stream";

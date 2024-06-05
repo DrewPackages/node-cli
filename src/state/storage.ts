@@ -3,7 +3,7 @@ import {
   ScheduleOutput,
   ValueOrOutput,
   isScheduleOutput,
-} from "engine";
+} from "@drewpackages/engine";
 
 export class StateStorage implements IStateStorage {
   private readonly registeredIds: Set<string> = new Set();

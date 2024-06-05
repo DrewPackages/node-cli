@@ -1,4 +1,4 @@
-import { parse, validate } from "engine";
+import { parse, validate } from "@drewpackages/engine";
 import { fetcher } from "../../fetcher";
 import { CmdInfoSupplier } from "../types";
 import { CombinedConfigResolver, DEFAULT_CONFIG_PATH } from "../../config";

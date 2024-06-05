@@ -1,4 +1,4 @@
-import { IEnvironmentResolver } from "engine";
+import { IEnvironmentResolver } from "@drewpackages/engine";
 import { EnvConfigResolver } from "./env";
 import { StoredConfigResolver } from "./stored";
 
