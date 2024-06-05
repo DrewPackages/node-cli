@@ -10,11 +10,10 @@
     "build": "rollup -c"
   },
   "bin": {
-    "drew": "bin/cli.js"
+    "drew": "bin/drew.js"
   },
   "files": [
-    "bin/cli.js",
-    "README.md"
+    "!src"
   ],
   "author": "",
   "license": "ISC",

@@ -10,7 +10,7 @@ import shebang from "rollup-plugin-add-shebang";
 export default defineConfig({
   input: "src/index.ts",
   output: {
-    file: path.resolve("bin", "cli.js"),
+    file: path.resolve("bin", "drew.js"),
     format: "es",
   },
   external: [
@@ -30,7 +30,7 @@ export default defineConfig({
     }),
     terser(),
     shebang({
-      include: path.resolve("bin", "cli.js"),
+      include: path.resolve("bin", "drew.js"),
       shebang: "#!/usr/bin/env node",
     }),
   ],
