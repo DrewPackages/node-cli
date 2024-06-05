@@ -9,7 +9,9 @@
     "cli": "ts-node-esm src/index.ts",
     "build": "rollup -c"
   },
-  "bin": "bin/cli.js",
+  "bin": {
+    "drew": "bin/cli.js"
+  },
   "files": [
     "bin/cli.js",
     "README.md"
