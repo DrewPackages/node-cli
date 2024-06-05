@@ -3,16 +3,15 @@
 ## Example
 
 ### Installation
-Install CLI deps
 
 ```sh
-pnpm i
+npm i -g @drewpackages/cli
 ```
 
 ### Run example
 
 ```sh
-pnpm run cli --check DrewPackages/engine/test/formulas/erc20  --params "{\"name\": \"Test Token\", \"symbol\": \"TT\", \"totalSupply\": 100000000000000 }"
+drew check DrewPackages/engine/test/formulas/erc20  --params "{\"name\": \"Test Token\", \"symbol\": \"TT\", \"totalSupply\": 100000000000000 }"
 ```
 
 Drew will download formula from git, validate it and print its steps
