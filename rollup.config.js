@@ -21,6 +21,7 @@ export default defineConfig({
     "fs-extra",
     "memory-streams",
     "simple-git",
+    "prompts",
   ],
   plugins: [
     nodeResolve(),
