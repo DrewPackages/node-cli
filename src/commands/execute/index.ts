@@ -49,7 +49,11 @@ async function checkRpcUrl(config: CombinedConfigResolver) {
       },
     ]);
     const receivedUrl = url.customRpc || url.value;
-    config.setEnv("RPC_URL", receivedUrl);
+    if (receivedUrl) {
+      config.setEnv("RPC_URL", receivedUrl);
+    } else {
+      throw new Error("Rpc url not provided");
+    }
   }
 }
 
@@ -66,7 +70,11 @@ async function checkPrivateKey(config: CombinedConfigResolver) {
           ? true
           : `Malformed private key ${val}`,
     });
-    config.setEnv("PRIVATE_KEY", result.value);
+    if (result.value) {
+      config.setEnv("PRIVATE_KEY", result.value);
+    } else {
+      throw new Error("Private key not provided");
+    }
   }
 }
 
