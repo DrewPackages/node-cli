@@ -44,6 +44,17 @@ export class TaskExecutor {
     formulaPath: string,
     stage: TaskStageInstruction
   ): Promise<Array<{ id: string; value: any }>> {
+    if (stage.interactive) {
+      return this.runInteraciveStage(formulaPath, stage as any);
+    } else {
+      return this.runRegularStage(formulaPath, stage as any);
+    }
+  }
+
+  async runRegularStage(
+    formulaPath: string,
+    stage: TaskStageInstruction & { interactive?: false }
+  ): Promise<Array<{ id: string; value: any }>> {
     const workdir = normalize(join(getFormulaPath(formulaPath)));
 
     const isOutputsExpected = "outputs" in stage && stage.outputs.length;
@@ -60,7 +71,6 @@ export class TaskExecutor {
           .map(([name, val]) => [name, this.state.toValue(val)])
           .map(([name, val]) => `${name}=${val}`)
           .concat(`DREW_WORKDIR=${this.state.toValue(stage.workdir)}`),
-        AttachStdin: stage.interactive,
         Tty: false,
         HostConfig: { AutoRemove: true, Binds: [`${workdir}:/project:ro`] },
       }
@@ -75,6 +85,85 @@ export class TaskExecutor {
           .map((o) => ({
             id: o.id,
             value: this.readOutput(stdoutText, stderrText, o),
+          }))
+      : [];
+  }
+
+  resize(container: Dockerode.Container) {
+    var dimensions = {
+      h: process.stdout.rows,
+      w: process.stderr.columns,
+    };
+
+    if (dimensions.h != 0 && dimensions.w != 0) {
+      container.resize(dimensions, function () {});
+    }
+  }
+
+  private async runInteraciveStage(
+    formulaPath: string,
+    stage: TaskStageInstruction & { interactive: true }
+  ): Promise<Array<{ id: string; value: any }>> {
+    const workdir = normalize(join(getFormulaPath(formulaPath)));
+
+    const isOutputsExpected = "outputs" in stage && stage.outputs.length;
+
+    const out = this.createStream("stdout");
+
+    const container = await this.docker.createContainer({
+      Env: Object.entries(stage.envs)
+        .map(([name, val]) => [name, this.state.toValue(val)])
+        .map(([name, val]) => `${name}=${val}`)
+        .concat(`DREW_WORKDIR=${this.state.toValue(stage.workdir)}`),
+      Image: stage.image,
+      Hostname: "",
+      User: "",
+      Cmd: stage.cmd.map((cmd) => this.state.toValue(cmd)),
+      AttachStdin: true,
+      AttachStdout: true,
+      AttachStderr: true,
+      Tty: true,
+      OpenStdin: true,
+      StdinOnce: false,
+      HostConfig: { AutoRemove: true, Binds: [`${workdir}:/project:ro`] },
+    });
+    const isRaw = process.stdin.isRaw;
+
+    const stream = await container.attach({
+      stream: true,
+      stdin: true,
+      stdout: true,
+      stderr: true,
+      hijack: true,
+    });
+
+    // Show outputs
+    stream.pipe(out.stream);
+
+    // Connect stdin
+    process.stdin.resume();
+    process.stdin.setEncoding("utf8");
+    process.stdin.setRawMode(true);
+    process.stdin.pipe(stream);
+
+    await container.start();
+    this.resize(container);
+    out.stream.on("resize", () => {
+      this.resize(container);
+    });
+
+    await container.wait();
+
+    process.stdin.setRawMode(isRaw);
+
+    const outText = out.inMemory.toString();
+
+    return isOutputsExpected
+      ? stage.outputs
+          .filter((o) => o.extract != null)
+          .map((o) => ({
+            id: o.id,
+            value: this.readOutput(outText, outText, o),
           }))
       : [];
   }
