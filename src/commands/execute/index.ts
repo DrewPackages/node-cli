@@ -78,7 +78,7 @@ async function checkPrivateKey(config: CombinedConfigResolver) {
   }
 }
 
-export const ExecuteCommandInfo: CmdInfoSupplier = (program) =>
+export const ExecuteEVMCommandInfo: CmdInfoSupplier = (program) =>
   program
     .command("deploy")
     .description("Deploy drew formula")

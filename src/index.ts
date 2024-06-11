@@ -8,7 +8,7 @@ const program = new Command();
 
 program
   .name("drew")
-  .description("CLI for dapp deployments")
+  .description("CLI for dApp deployments on EVM and Ton chains")
   .version(packageJson.version);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
