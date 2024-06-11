@@ -1,5 +1,9 @@
 import Dockerode from "dockerode";
-import { RegexOutputSpec, ScheduleOutput, StageInstruction } from "@drewpackages/engine";
+import {
+  RegexOutputSpec,
+  ScheduleOutput,
+  type TaskStageInstruction,
+} from "@drewpackages/engine";
 import { getFormulaPath } from "../fetcher";
 import { normalize, join } from "path";
 import { PassThrough } from "stream";
@@ -20,16 +24,29 @@ export class TaskExecutor {
     stream: NodeJS.WritableStream;
     inMemory: WritableStream;
   } {
+    const stream = new PassThrough();
     const inMemory = new WritableStream();
 
-    return { stream: inMemory, inMemory };
+    stream.on("data", (chunk) => {
+      switch (to) {
+        case "stderr":
+          process.stderr.write(chunk);
+        case "stdout":
+          process.stdout.write(chunk);
+      }
+      inMemory.write(chunk);
+    });
+
+    return { stream, inMemory: inMemory };
   }
 
   async runStage(
     formulaPath: string,
-    stage: StageInstruction
+    stage: TaskStageInstruction
   ): Promise<Array<{ id: string; value: any }>> {
     const workdir = normalize(join(getFormulaPath(formulaPath)));
+
+    const isOutputsExpected = "outputs" in stage && stage.outputs.length;
 
     const stdout = this.createStream("stdout");
     const stderr = this.createStream("stderr");
@@ -43,8 +60,7 @@ export class TaskExecutor {
           .map(([name, val]) => [name, this.state.toValue(val)])
           .map(([name, val]) => `${name}=${val}`)
           .concat(`DREW_WORKDIR=${this.state.toValue(stage.workdir)}`),
-        AttachStdout: true,
-        AttachStderr: true,
+        AttachStdin: stage.interactive,
         Tty: false,
         HostConfig: { AutoRemove: true, Binds: [`${workdir}:/project:ro`] },
       }
@@ -53,7 +69,7 @@ export class TaskExecutor {
     const stdoutText = stdout.inMemory.toString();
     const stderrText = stderr.inMemory.toString();
 
-    return "outputs" in stage && stage.outputs.length >= 0
+    return isOutputsExpected
       ? stage.outputs
           .filter((o) => o.extract != null)
           .map((o) => ({
