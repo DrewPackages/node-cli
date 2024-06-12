@@ -1,11 +1,13 @@
 import { ValidateCommandInfo } from "./validate";
-import { ExecuteCommandInfo } from "./execute";
+import { ExecuteEVMCommandInfo } from "./execute";
+import { ExecuteTonCommandInfo } from "./execute-ton";
 import { ConfigDeleteCommandInfo, ConfigSetCommandInfo } from "./config";
 import { Command } from "commander";
 
 export function provideCli(program: Command): Command {
   ValidateCommandInfo(program);
-  ExecuteCommandInfo(program);
+  ExecuteEVMCommandInfo(program);
+  ExecuteTonCommandInfo(program)
   ConfigSetCommandInfo(program);
   ConfigDeleteCommandInfo(program);
 

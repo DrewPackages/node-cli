@@ -3,6 +3,7 @@ import { StageInstruction } from "@drewpackages/engine";
 import { getFormulaPath } from "../fetcher";
 import { normalize, join } from "path";
 import { StateStorage } from "state";
+import { dockerUtils } from "../utils";
 
 export class OffchainExecutor {
   private readonly docker: Dockerode;
@@ -20,6 +21,7 @@ export class OffchainExecutor {
     if ("dind" in stage && stage.dind) {
       Binds.push("/var/run/docker.sock:/var/run/docker.sock");
     }
+    await dockerUtils.pullImage(this.docker, stage.image);
     await this.docker.run(
       stage.image,
       stage.cmd.map((cmd) => this.state.toValue(cmd)),

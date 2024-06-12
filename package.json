@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
+    "testton": "ts-node-esm src/index.ts deploy-ton drinkius/tonfaucet  --params \"{\"name\": \"Test Token\", \"symbol\": \"TT\", \"totalSupply\": 100000000000000 }\" --dryRun",
     "test": "echo \"Error: no test specified\" && exit 1",
     "cli": "ts-node-esm src/index.ts",
     "build": "rollup -c"
@@ -22,6 +23,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@types/docker-modem": "^3.0.6",
     "@types/dockerode": "^3.3.29",
     "@types/fs-extra": "^11.0.4",
     "@types/prompts": "^2.4.9",
@@ -32,7 +34,7 @@
     "zod": "^3.23.8"
   },
   "dependencies": {
-    "@drewpackages/engine": "0.0.3",
+    "@drewpackages/engine": "^0.1.0",
     "commander": "^12.1.0",
     "dockerode": "^4.0.2",
     "fs-extra": "^11.2.0",
