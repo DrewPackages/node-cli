@@ -9,6 +9,7 @@ import { normalize, join } from "path";
 import { PassThrough } from "stream";
 import { WritableStream } from "memory-streams";
 import { StateStorage } from "state";
+import { dockerUtils } from "utils";
 
 export class TaskExecutor {
   private readonly docker: Dockerode;
@@ -44,6 +45,7 @@ export class TaskExecutor {
     formulaPath: string,
     stage: TaskStageInstruction
   ): Promise<Array<{ id: string; value: any }>> {
+    await dockerUtils.pullImage(this.docker, stage.image);
     if (stage.interactive) {
       return this.runInteraciveStage(formulaPath, stage as any);
     } else {

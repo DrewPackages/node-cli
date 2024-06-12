@@ -23,6 +23,7 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.6",
+    "@types/docker-modem": "^3.0.6",
     "@types/dockerode": "^3.3.29",
     "@types/fs-extra": "^11.0.4",
     "@types/prompts": "^2.4.9",
