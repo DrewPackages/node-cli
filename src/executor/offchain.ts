@@ -3,7 +3,7 @@ import { StageInstruction } from "@drewpackages/engine";
 import { getFormulaPath } from "../fetcher";
 import { normalize, join } from "path";
 import { StateStorage } from "state";
-import { dockerUtils } from "utils";
+import { dockerUtils } from "../utils";
 
 export class OffchainExecutor {
   private readonly docker: Dockerode;

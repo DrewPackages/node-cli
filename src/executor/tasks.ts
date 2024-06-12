@@ -9,7 +9,7 @@ import { normalize, join } from "path";
 import { PassThrough } from "stream";
 import { WritableStream } from "memory-streams";
 import { StateStorage } from "state";
-import { dockerUtils } from "utils";
+import { dockerUtils } from "../utils";
 
 export class TaskExecutor {
   private readonly docker: Dockerode;
