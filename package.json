@@ -34,7 +34,7 @@
     "zod": "^3.23.8"
   },
   "dependencies": {
-    "@drewpackages/engine": "file:../engine",
+    "@drewpackages/engine": "^0.1.0",
     "commander": "^12.1.0",
     "dockerode": "^4.0.2",
     "fs-extra": "^11.2.0",
