@@ -50,12 +50,14 @@ class GitHubFetcher implements IFormulaFetcher {
     await git.cwd({ path: repoPath });
 
     if (await isEmptyDir(repoPath)) {
-      await git.clone(`git@github.com:${formulaRef.repo}.git`, repoPath);
+      await git.clone(`git@github.com:${formulaRef.repo}.git`, repoPath, [
+        "--recurse-submodules",
+      ]);
     } else {
-      await git.pull();
+      await git.pull(undefined, undefined, ["--recurse-submodules"]);
     }
     if (formulaRef.rev) {
-      await git.checkout(formulaRef.rev);
+      await git.checkout(formulaRef.rev, ["--recurse-submodules"]);
     }
   }
 
