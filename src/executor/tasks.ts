@@ -10,6 +10,7 @@ import { PassThrough } from "stream";
 import { WritableStream } from "memory-streams";
 import { StateStorage } from "state";
 import { dockerUtils } from "../utils";
+import { StageInstructionCommon } from "@drewpackages/engine/out/interpretator";
 
 export class TaskExecutor {
   private readonly docker: Dockerode;
@@ -43,7 +44,7 @@ export class TaskExecutor {
 
   async runStage(
     formulaPath: string,
-    stage: TaskStageInstruction
+    stage: TaskStageInstruction & StageInstructionCommon
   ): Promise<Array<{ id: string; value: any }>> {
     await dockerUtils.pullImage(this.docker, stage.image);
     if (stage.interactive) {
@@ -55,7 +56,9 @@ export class TaskExecutor {
 
   async runRegularStage(
     formulaPath: string,
-    stage: TaskStageInstruction & { interactive?: false }
+    stage: TaskStageInstruction & {
+      interactive?: false;
+    } & StageInstructionCommon
   ): Promise<Array<{ id: string; value: any }>> {
     const workdir = normalize(join(getFormulaPath(formulaPath)));
 
@@ -104,7 +107,7 @@ export class TaskExecutor {
 
   private async runInteraciveStage(
     formulaPath: string,
-    stage: TaskStageInstruction & { interactive: true }
+    stage: TaskStageInstruction & { interactive: true } & StageInstructionCommon
   ): Promise<Array<{ id: string; value: any }>> {
     const workdir = normalize(join(getFormulaPath(formulaPath)));
 

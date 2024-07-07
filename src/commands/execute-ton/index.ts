@@ -5,8 +5,6 @@ import { CombinedConfigResolver, DEFAULT_CONFIG_PATH } from "../../config";
 import { TaskExecutor } from "../../executor/tasks";
 import { OffchainExecutor } from "../../executor/offchain";
 import { StateStorage } from "../../state";
-import prompts from "prompts";
-import z from "zod";
 
 export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
   program
@@ -28,7 +26,9 @@ export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
         },
         fetcher,
         state,
-        opts.params !== "" ? JSON.parse(opts.params) : undefined
+        opts.params !== "" && opts.params != null
+          ? JSON.parse(opts.params)
+          : undefined
       );
 
       const instructions = await parse(steps, configResolver, state);
