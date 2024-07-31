@@ -4,8 +4,12 @@ import {
   ValueOrOutput,
   isScheduleOutput,
 } from "@drewpackages/engine";
+import { IStateStorageDump, StateStorageDumpSchema } from "./dump";
+import { IDumpable } from "dump";
 
-export class StateStorage implements IStateStorage {
+export class StateStorage
+  implements IStateStorage, IDumpable<IStateStorageDump>
+{
   private readonly registeredIds: Set<string> = new Set();
 
   private readonly resolvedValues: Map<string, any> = new Map();
@@ -52,5 +56,30 @@ export class StateStorage implements IStateStorage {
     }
 
     return valueOrOutput;
+  }
+
+  isCorrectDump(
+    maybeDump: any
+  ): maybeDump is { outputIds: string[]; resolvedValues: Map<string, any> } {
+    return StateStorageDumpSchema.safeParse(maybeDump).success;
+  }
+
+  toDump(): IStateStorageDump {
+    return {
+      outputIds: Array.from(this.registeredIds.values()),
+      resolvedValues: Object.fromEntries(this.resolvedValues.entries()),
+    };
+  }
+
+  fromDump(dump: IStateStorageDump): undefined {
+    dump.outputIds.forEach((id) => this.registeredIds.add(id));
+    Object.getOwnPropertyNames(dump.resolvedValues).forEach((key) => {
+      this.resolvedValues.set(
+        key,
+        "get" in dump.resolvedValues
+          ? dump.resolvedValues.get(key)
+          : dump.resolvedValues[key]
+      );
+    });
   }
 }

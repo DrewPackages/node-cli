@@ -1,37 +1,72 @@
-import { parse, validate } from "@drewpackages/engine";
+import { parse, StageInstruction, validate } from "@drewpackages/engine";
 import { fetcher } from "../../fetcher";
 import { CmdInfoSupplier } from "../types";
 import { CombinedConfigResolver, DEFAULT_CONFIG_PATH } from "../../config";
 import { TaskExecutor } from "../../executor/tasks";
 import { OffchainExecutor } from "../../executor/offchain";
 import { StateStorage } from "../../state";
+import { ConfigStorage } from "../../config/storage";
+import { FormulaExecutionDump } from "dump";
+import { normalize, join } from "node:path";
+import fs from "fs-extra";
 
 export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
   program
     .command("deploy-ton")
     .description("Deploy drew formula on Ton chain")
-    .argument("<string>", "Formula")
+    .argument("[string]", "Formula")
     .option("-p --params <object>", "Formula parameters as json object")
     .option("-c --config <path>", "Config file path")
     .option("--dryRun", "Dry run formula deployment")
+    .option(
+      "--dumpAfter <number>",
+      "Number of executed steps before dump save",
+      "0"
+    )
+    .option("--dumpFileName <path>", "File name for dump save", "./dump.json")
+    .option("-f --fromDump", "Should read from dump", false)
     .action(async (formula, opts) => {
+      const dumpPath = normalize(join(process.cwd(), opts.dumpFileName));
+      const dumpFileExists = fs.existsSync(dumpPath);
+
+      const dump: FormulaExecutionDump | undefined = Boolean(opts.fromDump)
+        ? JSON.parse(fs.readFileSync(dumpPath).toString("utf-8"))
+        : undefined;
+
+      if (!formula && !dumpFileExists) {
+        console.log("Formula name or dump file should be provided");
+      }
+
+      let formulaName = formula || dump!.formulaName;
+
       const state = new StateStorage();
-      const configResolver = new CombinedConfigResolver(
-        opts.config || DEFAULT_CONFIG_PATH
-      );
+      dump && state.fromDump(dump.state);
+      const config = new ConfigStorage();
+      dump && config.fromDump(dump.config);
 
-      const steps = await validate(
-        {
-          formulaName: formula,
-        },
-        fetcher,
-        state,
-        opts.params !== "" && opts.params != null
-          ? JSON.parse(opts.params)
-          : undefined
-      );
+      let instructions: Array<StageInstruction>;
 
-      const instructions = await parse(steps, configResolver, state);
+      if (!dump) {
+        const configResolver = new CombinedConfigResolver(
+          opts.config || DEFAULT_CONFIG_PATH
+        );
+
+        const steps = await validate(
+          {
+            formulaName,
+          },
+          fetcher,
+          state,
+          opts.params !== "" && opts.params != null
+            ? JSON.parse(opts.params)
+            : undefined
+        );
+
+        instructions = await parse(steps, configResolver, state, config);
+      } else {
+        await fetcher.fetchFormulaFileText(formulaName, "formula.js");
+        instructions = dump.instructions;
+      }
 
       const tasks = new TaskExecutor(state);
       const offchain = new OffchainExecutor(state);
@@ -40,15 +75,37 @@ export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
         console.log("Instructions for execution");
         console.log(JSON.stringify(instructions, null, 2));
       } else {
-        for (let index = 0; index < instructions.length; index++) {
+        const dumpAfter = opts.dumpAfter ? Number.parseInt(opts.dumpAfter) : 0;
+        const isDumpRequired = dumpAfter > 0;
+        const formulaNameWithoutRev = formulaName.replace(/\@.+/, "");
+        for (
+          let index = dump?.executedSteps || 0;
+          index < (isDumpRequired ? dumpAfter : instructions.length);
+          index++
+        ) {
           const instruction = instructions[index];
           if (instruction.type === "task") {
-            const outputs = await tasks.runStage(formula, instruction);
+            const outputs = await tasks.runStage(
+              formulaNameWithoutRev,
+              instruction
+            );
             state.addResolvedValues(outputs);
           }
           if (instruction.type === "offchain") {
-            await offchain.runStage(formula, instruction);
+            await offchain.runStage(formulaNameWithoutRev, instruction);
           }
+        }
+
+        if (isDumpRequired) {
+          const dump: FormulaExecutionDump = {
+            config: config.toDump(),
+            state: state.toDump(),
+            executedSteps: dumpAfter,
+            instructions,
+            formulaName: await fetcher.getUnambiguousFormulaName(formulaName),
+          };
+
+          fs.writeFileSync(dumpPath, JSON.stringify(dump, null, 2));
         }
       }
     });

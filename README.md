@@ -27,6 +27,13 @@ Used apis:
         hardhat/v1/script
 ```
 
+#### Dump in halfway and resume
+
+```sh
+# ton
+drew deploy-ton DrewPackages/tonfaucet  --params "{\"name\": \"Test Token\", \"symbol\": \"TT\", \"totalSupply\": 100000000000000 }" --dumpAfter 1
+```
+
 ## Contributing
 
 ```sh

@@ -32,7 +32,7 @@ async function isEmptyDir(path: string) {
 class GitHubFetcher implements IFormulaFetcher {
   private parseRef(formulaRef: string): ParsedFormulaRef {
     const rev = formulaRef.includes("@") ? formulaRef.split("@")[1] : undefined;
-    const segments = formulaRef.split("/").map((s) => s.replace(`@${rev}`, ""));
+    const segments = formulaRef.replace(/\@.*/, "").split("/");
 
     return {
       repo: `${segments[0]}/${segments[1]}`,
@@ -54,11 +54,27 @@ class GitHubFetcher implements IFormulaFetcher {
         "--recurse-submodules",
       ]);
     } else {
+      const branches = await git.branch();
+      if (branches.detached || !branches.current) {
+        await git.checkout(branches.all[0], ["--recurse-submodules"]);
+      }
       await git.pull(undefined, undefined, ["--recurse-submodules"]);
     }
     if (formulaRef.rev) {
       await git.checkout(formulaRef.rev, ["--recurse-submodules"]);
     }
+  }
+
+  private async getFormulaCommitHash(
+    formulaRef: ParsedFormulaRef
+  ): Promise<string | undefined> {
+    const repoPath = normalize(
+      join(process.env.HOME as string, `/.drew/formulas/${formulaRef.repo}`)
+    );
+    const git = simpleGit(repoPath);
+    const log = await git.log();
+
+    return log.latest?.hash;
   }
 
   private async readClonnedFile(
@@ -83,6 +99,19 @@ class GitHubFetcher implements IFormulaFetcher {
     const parsedFormulaRef = this.parseRef(formulaRef);
     await this.clone(parsedFormulaRef);
     return this.readClonnedFile(parsedFormulaRef, filePath);
+  }
+
+  async getUnambiguousFormulaName(formulaName: string): Promise<string> {
+    const parsedFormulaRef = this.parseRef(formulaName);
+    const commitHash = await this.getFormulaCommitHash(parsedFormulaRef);
+
+    return `${parsedFormulaRef.repo}${
+      parsedFormulaRef.subtree ? `/${parsedFormulaRef.subtree}` : ""
+    }${
+      commitHash || parsedFormulaRef.rev
+        ? `@${commitHash || parsedFormulaRef.rev}`
+        : ""
+    }`;
   }
 }
 

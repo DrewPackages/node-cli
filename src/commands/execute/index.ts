@@ -7,6 +7,7 @@ import { OffchainExecutor } from "../../executor/offchain";
 import { StateStorage } from "../../state";
 import prompts from "prompts";
 import z from "zod";
+import { ConfigStorage } from "../../config/storage";
 
 const AVAILABLE_NETWORK_RPCS: Array<{ title: string; value: string }> = [
   {
@@ -88,6 +89,7 @@ export const ExecuteEVMCommandInfo: CmdInfoSupplier = (program) =>
     .option("--dryRun", "Dry run formula deployment")
     .action(async (formula, opts) => {
       const state = new StateStorage();
+      const config = new ConfigStorage();
       const configResolver = new CombinedConfigResolver(
         opts.config || DEFAULT_CONFIG_PATH
       );
@@ -104,7 +106,7 @@ export const ExecuteEVMCommandInfo: CmdInfoSupplier = (program) =>
         opts.params !== "" ? JSON.parse(opts.params) : undefined
       );
 
-      const instructions = await parse(steps, configResolver, state);
+      const instructions = await parse(steps, configResolver, state, config);
 
       const tasks = new TaskExecutor(state);
       const offchain = new OffchainExecutor(state);

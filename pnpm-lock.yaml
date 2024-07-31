@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@drewpackages/engine':
-    specifier: ^0.2.0
-    version: 0.2.0
+    specifier: ^0.3.0
+    version: 0.3.0
   commander:
     specifier: ^12.1.0
     version: 12.1.0
@@ -85,10 +85,10 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
-  /@drewpackages/engine@0.2.0:
-    resolution: {integrity: sha512-MTyKQ9jULQQItBj3MlrgOR84Sw8GPYl4OtKH9MN+fztmPRPGVQLS4grll0lOFLEXsSjYeajsjnp6//Covg4XcQ==}
+  /@drewpackages/engine@0.3.0:
+    resolution: {integrity: sha512-OAbemruAN9QEnHVjCK5d8/YNESUCcWGXfanYI2IiN27jNgp4G4gpdc5uMJTPZdavLV1OQtS248ZkCT5gyyFWUw==}
     dependencies:
-      ethers: 6.13.1
+      ethers: 6.13.2
       jsonschema: 1.4.1
       reflect-metadata: 0.2.2
       typedi: 0.10.0
@@ -800,8 +800,8 @@ packages:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
     dev: true
 
-  /ethers@6.13.1:
-    resolution: {integrity: sha512-hdJ2HOxg/xx97Lm9HdCWk949BfYqYWpyw4//78SiwOLgASyfrNszfMUNB2joKjvGUdwhHfaiMMFFwacVVoLR9A==}
+  /ethers@6.13.2:
+    resolution: {integrity: sha512-9VkriTTed+/27BGuY1s0hf441kqwHJ1wtN2edksEtiRvXx+soxRX3iSXTfFqq2+YwrOqbDoTHjIhQnjJRlzKmg==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@adraffy/ens-normalize': 1.10.1
