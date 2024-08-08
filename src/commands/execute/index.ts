@@ -103,7 +103,9 @@ export const ExecuteEVMCommandInfo: CmdInfoSupplier = (program) =>
         },
         fetcher,
         state,
-        opts.params !== "" ? JSON.parse(opts.params) : undefined
+        opts.params && typeof opts.params === "string"
+          ? JSON.parse(opts.params)
+          : {}
       );
 
       const instructions = await parse(steps, configResolver, state, config);

@@ -17,7 +17,7 @@ export const ValidateCommandInfo: CmdInfoSupplier = (program) =>
         },
         fetcher,
         state,
-        opts.params !== "" ? JSON.parse(opts.params) : undefined
+        opts.params && typeof opts.params ? JSON.parse(opts.params) : {}
       );
 
       const usedApis = steps.map((s) => `${s.group}/v${s.version}/${s.method}`);

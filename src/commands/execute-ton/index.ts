@@ -57,9 +57,9 @@ export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
           },
           fetcher,
           state,
-          opts.params !== "" && opts.params != null
+          opts.params && typeof opts.params === "string"
             ? JSON.parse(opts.params)
-            : undefined
+            : {}
         );
 
         instructions = await parse(steps, configResolver, state, config);
