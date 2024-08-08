@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@drewpackages/engine':
-    specifier: ^0.3.0
-    version: 0.3.0
+    specifier: ^0.3.1
+    version: 0.3.1
   commander:
     specifier: ^12.1.0
     version: 12.1.0
@@ -85,8 +85,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
-  /@drewpackages/engine@0.3.0:
-    resolution: {integrity: sha512-OAbemruAN9QEnHVjCK5d8/YNESUCcWGXfanYI2IiN27jNgp4G4gpdc5uMJTPZdavLV1OQtS248ZkCT5gyyFWUw==}
+  /@drewpackages/engine@0.3.1:
+    resolution: {integrity: sha512-l3L6EZOn5zGl/SCQkF4FK/iz9FNx9hG68kC7F19WByNhMhAZ3yoyZVij4sRPlfb1mJmo/drjEyn2hPrWlWle2g==}
     dependencies:
       ethers: 6.13.2
       jsonschema: 1.4.1
