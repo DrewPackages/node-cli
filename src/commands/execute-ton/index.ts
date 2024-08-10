@@ -21,7 +21,7 @@ export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
     .option(
       "--dumpAfter <number>",
       "Number of executed steps before dump save",
-      "0"
+      "-1"
     )
     .option("--dumpFileName <path>", "File name for dump save", "./dump.json")
     .option("-f --fromDump", "Should read from dump", false)
@@ -75,8 +75,8 @@ export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
         console.log("Instructions for execution");
         console.log(JSON.stringify(instructions, null, 2));
       } else {
-        const dumpAfter = opts.dumpAfter ? Number.parseInt(opts.dumpAfter) : 0;
-        const isDumpRequired = dumpAfter > 0;
+        const dumpAfter = opts.dumpAfter ? Number.parseInt(opts.dumpAfter) : -1;
+        const isDumpRequired = dumpAfter >= 0;
         const formulaNameWithoutRev = formulaName.replace(/\@.+/, "");
         for (
           let index = dump?.executedSteps || 0;
