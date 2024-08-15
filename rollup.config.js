@@ -22,6 +22,7 @@ export default defineConfig({
     "memory-streams",
     "simple-git",
     "prompts",
+    "ssh2",
   ],
   plugins: [
     nodeResolve(),
