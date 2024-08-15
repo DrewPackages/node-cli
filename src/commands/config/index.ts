@@ -1,5 +1,6 @@
 import { CmdInfoSupplier } from "../types";
-import { CombinedConfigResolver, DEFAULT_CONFIG_PATH } from "../../config";
+import { DEFAULT_CONFIG_PATH } from "../../config";
+import { CombinedConfigResolver } from "@drewpackages/host-common";
 
 export const ConfigSetCommandInfo: CmdInfoSupplier = (program) =>
   program

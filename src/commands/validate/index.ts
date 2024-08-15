@@ -1,7 +1,7 @@
 import { validate } from "@drewpackages/engine";
-import { fetcher } from "../../fetcher";
+import { FORMULAS_DIR } from "../../fetcher";
 import { CmdInfoSupplier } from "../types";
-import { StateStorage } from "../../state";
+import { GitHubFetcher, StateStorage } from "@drewpackages/host-common";
 
 export const ValidateCommandInfo: CmdInfoSupplier = (program) =>
   program
@@ -11,6 +11,7 @@ export const ValidateCommandInfo: CmdInfoSupplier = (program) =>
     .option("-p --params <object>", "Formula parameters as json object")
     .action(async (formula, opts) => {
       const state = new StateStorage();
+      const fetcher = new GitHubFetcher(FORMULAS_DIR);
       const steps = await validate(
         {
           formulaName: formula,

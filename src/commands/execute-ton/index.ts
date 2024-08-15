@@ -1,14 +1,18 @@
 import { parse, StageInstruction, validate } from "@drewpackages/engine";
-import { fetcher } from "../../fetcher";
+import {
+  CombinedConfigResolver,
+  TaskExecutor,
+  OffchainExecutor,
+  StateStorage,
+  ConfigStorage,
+  FormulaExecutionDump,
+  GitHubFetcher,
+} from "@drewpackages/host-common";
 import { CmdInfoSupplier } from "../types";
-import { CombinedConfigResolver, DEFAULT_CONFIG_PATH } from "../../config";
-import { TaskExecutor } from "../../executor/tasks";
-import { OffchainExecutor } from "../../executor/offchain";
-import { StateStorage } from "../../state";
-import { ConfigStorage } from "../../config/storage";
-import { FormulaExecutionDump } from "dump";
+import { DEFAULT_CONFIG_PATH } from "../../config";
 import { normalize, join } from "node:path";
 import fs from "fs-extra";
+import { FORMULAS_DIR, getFormulaPath } from "../../fetcher";
 
 export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
   program
@@ -46,6 +50,8 @@ export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
 
       let instructions: Array<StageInstruction>;
 
+      const fetcher = new GitHubFetcher(FORMULAS_DIR);
+
       if (!dump) {
         const configResolver = new CombinedConfigResolver(
           opts.config || DEFAULT_CONFIG_PATH
@@ -68,8 +74,8 @@ export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
         instructions = dump.instructions;
       }
 
-      const tasks = new TaskExecutor(state);
-      const offchain = new OffchainExecutor(state);
+      const tasks = new TaskExecutor(state, getFormulaPath);
+      const offchain = new OffchainExecutor(state, getFormulaPath);
 
       if (opts.dryRun) {
         console.log("Instructions for execution");
