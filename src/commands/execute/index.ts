@@ -10,6 +10,8 @@ import {
   ConfigStorage,
   FormulaExecutionDump,
   GitHubFetcher,
+  EnvConfigResolver,
+  StoredConfigResolver,
 } from "@drewpackages/host-common";
 import prompts from "prompts";
 import z from "zod";
@@ -126,7 +128,8 @@ export const ExecuteEVMCommandInfo: CmdInfoSupplier = (program) =>
 
       if (!dump) {
         const configResolver = new CombinedConfigResolver(
-          opts.config || DEFAULT_CONFIG_PATH
+          new EnvConfigResolver(),
+          new StoredConfigResolver(opts.config || DEFAULT_CONFIG_PATH)
         );
         await checkRpcUrl(configResolver);
         await checkPrivateKey(configResolver);

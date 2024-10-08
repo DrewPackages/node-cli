@@ -7,6 +7,8 @@ import {
   ConfigStorage,
   FormulaExecutionDump,
   GitHubFetcher,
+  EnvConfigResolver,
+  StoredConfigResolver,
 } from "@drewpackages/host-common";
 import { CmdInfoSupplier } from "../types";
 import { DEFAULT_CONFIG_PATH } from "../../config";
@@ -54,7 +56,8 @@ export const ExecuteTonCommandInfo: CmdInfoSupplier = (program) =>
 
       if (!dump) {
         const configResolver = new CombinedConfigResolver(
-          opts.config || DEFAULT_CONFIG_PATH
+          new EnvConfigResolver(),
+          new StoredConfigResolver(opts.config || DEFAULT_CONFIG_PATH)
         );
 
         const steps = await validate(

@@ -1,6 +1,10 @@
 import { CmdInfoSupplier } from "../types";
 import { DEFAULT_CONFIG_PATH } from "../../config";
-import { CombinedConfigResolver } from "@drewpackages/host-common";
+import {
+  CombinedConfigResolver,
+  EnvConfigResolver,
+  StoredConfigResolver,
+} from "@drewpackages/host-common";
 
 export const ConfigSetCommandInfo: CmdInfoSupplier = (program) =>
   program
@@ -11,7 +15,8 @@ export const ConfigSetCommandInfo: CmdInfoSupplier = (program) =>
     .option("-c --config <path>", "Config file path")
     .action((name, value, opts) => {
       const configResolver = new CombinedConfigResolver(
-        opts.config || DEFAULT_CONFIG_PATH
+        new EnvConfigResolver(),
+        new StoredConfigResolver(opts.config || DEFAULT_CONFIG_PATH)
       );
 
       configResolver.setEnv(name, value);
@@ -25,7 +30,8 @@ export const ConfigDeleteCommandInfo: CmdInfoSupplier = (program) =>
     .option("-c --config <path>", "Config file path")
     .action((name, opts) => {
       const configResolver = new CombinedConfigResolver(
-        opts.config || DEFAULT_CONFIG_PATH
+        new EnvConfigResolver(),
+        new StoredConfigResolver(opts.config || DEFAULT_CONFIG_PATH)
       );
 
       configResolver.deleteEnv(name);
